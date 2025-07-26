@@ -1,0 +1,129 @@
+# version: "3.9"
+# services:
+#   postgres:
+#     image: postgres:16
+#     container_name: postgres
+#     restart: always
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: ""
+#       POSTGRES_DB: keciltoko
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - pg_data:/var/lib/postgresql/data
+
+#   mongodb:
+#     image: mongo:7
+#     container_name: mongodb
+#     restart: always
+#     environment:
+#       MONGO_INITDB_DATABASE: tokokecil
+#     ports:
+#       - "27017:27017"
+#     volumes:
+#       - mongo_data:/data/db
+
+#   product-service:
+#     build: ./tokokecil
+#     container_name: product-service
+#     depends_on:
+#       - postgres
+#     environment:
+#       DB_USER: postgres
+#       DB_PASS: ""
+#       DB_HOST: postgres
+#       DB_PORT: 5432
+#       DB_NAME: keciltoko
+#       JWT_SECRET: mysecretkey123
+#       # Connection Pooling ENV for PostgreSQL
+#       DB_MAX_OPEN_CONNS: 20
+#       DB_MAX_IDLE_CONNS: 10
+#       DB_CONN_MAX_LIFETIME: 60
+#     ports:
+#       - "8080:8080"
+#     restart: unless-stopped
+
+#   auth-service:
+#     build: ./tokokecil-ddd/auth-service
+#     container_name: auth-service
+#     depends_on:
+#       - mongodb
+#     environment:
+#       MONGO_URI: mongodb://mongodb:27017
+#       MONGO_DB: tokokecil
+#       JWT_SECRET: mysecretkey123
+#       PORT: 8081
+#       # Connection Pooling ENV for MongoDB
+#       MONGO_POOL_MIN: 5
+#       MONGO_POOL_MAX: 50
+#     ports:
+#       - "8081:8081"
+#     restart: unless-stopped
+
+#   gateway-service:
+#     build: ./gateway-service
+#     container_name: gateway-service
+#     depends_on:
+#       - product-service
+#       - auth-service
+#     environment:
+#       AUTH_SERVICE_URL: http://auth-service:8081
+#       PRODUCT_SERVICE_URL: http://product-service:8080
+#       JWT_SECRET: mysecretkey123
+#       PORT: 8000
+#     ports:
+#       - "8000:8000"
+#     restart: unless-stopped
+
+# volumes:
+#   pg_data:
+#   mongo_data:
+
+version: "3.9"
+
+services:
+  product-service:
+    image: asia-southeast2-docker.pkg.dev/plasma-figure-465402-b8/gcr.io/product-service:latest
+    container_name: product-service
+    environment:
+      DB_USER: u2l317f1q08he
+      DB_PASS: p899795b118e79204788af5d810b3c673a9ee1a1405f5b7b091a9d4396b0b4650
+      DB_HOST: c5cnr847jq0fj3.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com
+      DB_PORT: 5432
+      DB_NAME: d37crglhr6ab9s
+      JWT_SECRET: mysecretkey123
+      DB_MAX_OPEN_CONNS: 20
+      DB_MAX_IDLE_CONNS: 10
+      DB_CONN_MAX_LIFETIME: 60
+
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  auth-service:
+    image: asia-southeast2-docker.pkg.dev/plasma-figure-465402-b8/gcr.io/auth-service:latest
+    container_name: auth-service
+    environment:
+      MONGO_URI: mongodb+srv://slwijaya:jOWaO0bY28BqWlAx@cluster0.htaonhh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      MONGO_DB: tokokecil
+      JWT_SECRET: mysecretkey123
+      PORT: 8081
+      GRPC_PORT: 50052
+      MONGO_POOL_MIN: 5
+      MONGO_POOL_MAX: 50
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+
+  gateway-service:
+    image: asia-southeast2-docker.pkg.dev/plasma-figure-465402-b8/gcr.io/gateway-service:latest
+    container_name: gateway-service
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:8081
+      PRODUCT_SERVICE_URL: http://product-service:8080
+      JWT_SECRET: mysecretkey123
+      PORT: 8000
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
