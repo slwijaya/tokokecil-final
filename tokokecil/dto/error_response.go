@@ -1,4 +1,4 @@
-// dto/error_response.go
+// dto/error_response.go untuk
 package dto
 
 type ErrorResponse struct {

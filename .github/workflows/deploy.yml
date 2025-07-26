@@ -1,0 +1,77 @@
+name: Deploy Go Microservices to GCP VM
+
+on:
+  push:
+    branches: [main]   # Trigger workflow setiap ada push ke branch main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      PROJECT_ID: plasma-figure-465402-b8
+      REGISTRY: asia-southeast2-docker.pkg.dev/plasma-figure-465402-b8/gcr.io
+      VM_HOST: ${{ secrets.VM_HOST }}
+      VM_USER: ${{ secrets.VM_USER }}
+      # VM_SSH_KEY, GCP_SA_KEY, GCP_PROJECT_ID diambil dari secrets
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        project_id: ${{ env.PROJECT_ID }}
+
+    - name: Configure Docker to use Artifact Registry
+      run: |
+        gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+
+    # Build & Push Product Service
+    - name: Build & Push Product Service (tokokecil)
+      run: |
+        docker buildx build --platform linux/amd64,linux/arm64 \
+          -t ${{ env.REGISTRY }}/product-service:latest \
+          ./tokokecil --push
+
+    # Build & Push Auth Service
+    - name: Build & Push Auth Service (tokokecil-ddd/auth-service)
+      run: |
+        docker buildx build --platform linux/amd64,linux/arm64 \
+          -t ${{ env.REGISTRY }}/auth-service:latest \
+          ./tokokecil-ddd/auth-service --push
+
+    # Build & Push Gateway Service
+    - name: Build & Push Gateway Service
+      run: |
+        docker buildx build --platform linux/amd64,linux/arm64 \
+          -t ${{ env.REGISTRY }}/gateway-service:latest \
+          ./gateway-service --push
+
+    # Deploy ke VM via SSH
+    - name: Deploy to GCP VM via SSH
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ env.VM_HOST }}
+        username: ${{ env.VM_USER }}
+        key: ${{ secrets.VM_SSH_KEY }}
+        script: |
+          cd /home/${{ env.VM_USER }}/project-folder  # Ganti path ini jika repo di VM ada di folder lain
+          gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+          docker compose pull
+          docker compose up -d --remove-orphans
+
+    # Cek status service di VM
+    - name: Check Service Status
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ env.VM_HOST }}
+        username: ${{ env.VM_USER }}
+        key: ${{ secrets.VM_SSH_KEY }}
+        script: |
+          docker compose ps
