@@ -1,0 +1,137 @@
+openapi: 3.1.0
+info:
+  title: User API
+  description: REST API untuk manajemen data user (Create, Read, Update, Delete).
+  version: "1.0.0"
+  contact:
+    name: Backend Team
+    email: backend@example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local Development
+
+paths:
+  /users:
+    get:
+      summary: Ambil seluruh data user
+      description: Mengembalikan daftar seluruh user dalam database.
+      responses:
+        '200':
+          description: Daftar user berhasil diambil.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Tambah user baru
+      description: Membuat user baru ke database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: User berhasil dibuat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Data input tidak valid.
+
+  /users/{id}:
+    get:
+      summary: Ambil data user berdasarkan ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID user
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User ditemukan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User tidak ditemukan.
+    put:
+      summary: Update data user berdasarkan ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID user
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '200':
+          description: User berhasil diupdate.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Data input tidak valid.
+        '404':
+          description: User tidak ditemukan.
+    delete:
+      summary: Hapus data user berdasarkan ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID user
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User berhasil dihapus (No Content).
+        '404':
+          description: User tidak ditemukan.
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Andi
+        email:
+          type: string
+          example: andi@example.com
+      required:
+        - id
+        - name
+        - email
+
+    UserInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Budi
+        email:
+          type: string
+          example: budi@example.com
+      required:
+        - name
+        - email

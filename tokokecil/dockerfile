@@ -1,0 +1,16 @@
+# Dockerfile - Product Service (Go + PostgreSQL)
+FROM golang:1.22-alpine as build
+
+WORKDIR /app
+COPY . .
+
+RUN go mod download
+RUN go build -o product-service main.go
+
+FROM alpine:latest
+WORKDIR /app
+COPY --from=build /app/product-service /app/product-service
+COPY .env .env
+
+EXPOSE 8080
+CMD ["./product-service"]

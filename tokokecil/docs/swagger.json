@@ -1,0 +1,320 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API untuk aplikasi Tokokecil, sudah SOLID \u0026 Logrus-Ready",
+        "title": "Tokokecil API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Tokokecil Support",
+            "url": "http://tokokecil.support.local",
+            "email": "support@tokokecil.local"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/login": {
+            "post": {
+                "description": "Autentikasi user dan kembalikan JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login User",
+                "parameters": [
+                    {
+                        "description": "Login Data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mendapatkan daftar seluruh produk (hanya untuk user yang sudah login/JWT protected)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get All Products",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProductResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menambahkan produk baru (butuh login/JWT)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Create Product",
+                "parameters": [
+                    {
+                        "description": "Product Data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProductRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProductResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "description": "Register user baru ke aplikasi Tokokecil",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register User",
+                "parameters": [
+                    {
+                        "description": "Register Data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Mendapatkan semua data user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get All Users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.UserResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "details": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "budi@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "dto.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                }
+            }
+        },
+        "dto.ProductRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Kopi Gayo"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 25000
+                }
+            }
+        },
+        "dto.ProductResponse": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Kopi Gayo"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 25000
+                }
+            }
+        },
+        "dto.RegisterRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "budi@example.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Budi"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "dto.UserResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "budi@example.com"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Budi"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
