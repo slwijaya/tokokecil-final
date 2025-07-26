@@ -1,4 +1,4 @@
-// service/error_codes.go
+// service/error_codes.go untuk
 package service
 
 const (
