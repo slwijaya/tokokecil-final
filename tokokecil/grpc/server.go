@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// Fungsi untuk inisialisasi dan start gRPC server asd
+// Fungsi untuk inisialisasi dan start gRPC server
 func StartGRPCServer(productService service.ProductService) {
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
