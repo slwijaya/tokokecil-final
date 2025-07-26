@@ -19,6 +19,7 @@ func NewGatewayHandler(grpcClients *config.GRPCClients) *GatewayHandler {
 	return &GatewayHandler{GRPC: grpcClients}
 }
 
+// handler register
 func (h *GatewayHandler) Register(c echo.Context) error {
 	var req authpb.RegisterRequest
 	if err := c.Bind(&req); err != nil {
