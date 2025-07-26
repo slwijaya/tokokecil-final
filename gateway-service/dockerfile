@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . .
 
 RUN go mod download
-RUN go build -o gateway-service main.go
+RUN go build -o gateway-service ./cmd/main.go
 
 FROM alpine:latest
 WORKDIR /app
