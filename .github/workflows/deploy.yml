@@ -10,7 +10,7 @@ jobs:
 
     env:
       PROJECT_ID: plasma-figure-465402-b8
-      REGISTRY: asia-southeast2-docker.pkg.dev/plasma-figure-465402-b8/docker-asia
+      REGISTRY: asia-southeast2-docker.pkg.dev/plasma-figure-465402-b8/docker-asia-v2   # <<--- Update di sini!
       VM_HOST: ${{ secrets.VM_HOST }}
       VM_USER: ${{ secrets.VM_USER }}
       # VM_SSH_KEY, GCP_SA_KEY, GCP_PROJECT_ID diambil dari secrets
@@ -43,7 +43,7 @@ jobs:
           -t ${{ env.REGISTRY }}/product-service:latest \
           ./tokokecil --push
 
-    # Build & Push Auth Service (edit path jika sudah bukan submodule!)
+    # Build & Push Auth Service
     - name: Build & Push Auth Service (tokokecil-ddd/auth-service)
       run: |
         docker buildx build --platform linux/amd64,linux/arm64 \

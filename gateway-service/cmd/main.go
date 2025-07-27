@@ -11,7 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// function main
+// function utama main
 func main() {
 	config.LoadEnv()
 
