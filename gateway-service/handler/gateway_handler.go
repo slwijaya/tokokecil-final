@@ -32,7 +32,7 @@ func (h *GatewayHandler) Register(c echo.Context) error {
 	return c.JSON(http.StatusCreated, resp)
 }
 
-// handler login
+// handler
 func (h *GatewayHandler) Login(c echo.Context) error {
 	var req authpb.LoginRequest
 	if err := c.Bind(&req); err != nil {
